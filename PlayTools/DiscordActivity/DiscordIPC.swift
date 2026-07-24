@@ -33,47 +33,15 @@ class DiscordIPC {
     func createActivity(from custom: DiscordActivity) async -> RichPresence {
         var activity = RichPresence()
 
-        if custom.details.isEmpty {
-            let name = Bundle.main.infoDictionary?["CFBundleName"] as? String ?? ""
-            let displayName = Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String ?? name
-            activity.details = "Playing \(displayName)"
-        } else {
-            if custom.details.count == 1 { custom.details += " " }
+        if !custom.details.isEmpty {
             activity.details = custom.details
         }
 
-        let poweredStr = "Powered by PlayCover"
-        if custom.state.isEmpty {
-            activity.state = poweredStr
-        } else {
-            if custom.state.count == 1 { custom.state += " " }
+        if !custom.state.isEmpty {
             activity.state = custom.state
-            activity.assets.smallText = poweredStr
-            activity.assets.largeText = poweredStr
-        }
-
-        let logo = "https://raw.githubusercontent.com/PlayCover/PlaySite/master/src/assets/square-logo.png"
-        if custom.image.isEmpty {
-            let bundleID = Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String ?? ""
-            if let appImage = await loadImage(bundleID: bundleID) {
-                activity.assets.largeImage = appImage
-                activity.assets.largeText = nil
-                activity.assets.smallImage = logo
-            } else {
-                activity.assets.largeImage = logo
-            }
-        } else {
-            activity.assets.largeImage = custom.image
-            activity.assets.largeText = nil
-            activity.assets.smallImage = logo
         }
 
         activity.timestamps.start = Date()
-
-        activity.buttons = [
-            RichPresence.Button(label: "Download PlayCover",
-                                url: "https://github.com/PlayCover/PlayCover/releases")
-        ]
 
         return activity
     }
